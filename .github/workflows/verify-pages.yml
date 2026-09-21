@@ -1,0 +1,41 @@
+name: Verify GhostWeb Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Pages deployment
+        run: sleep 45
+      - name: Verify public routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://ghostwebenterprise.github.io"
+          routes=("/" "/signal.html" "/vpn.html" "/ai.html" "/ghostos.html")
+          for route in "${routes[@]}"; do
+            echo "Checking ${base}${route}"
+            curl --fail --silent --show-error --location --retry 6 --retry-delay 10 --retry-all-errors \
+              --connect-timeout 15 --max-time 30 "${base}${route}" >/tmp/page.html
+            test -s /tmp/page.html
+          done
+      - name: Verify homepage assets and project links
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://ghostwebenterprise.github.io"
+          curl --fail --silent --show-error --location "${base}/styles.css" >/dev/null
+          curl --fail --silent --show-error --location "${base}/app.js" >/dev/null
+          html="$(curl --fail --silent --show-error --location "${base}/")"
+          grep -q "GhostWeb" <<<"$html"
+          grep -q "signal.html" <<<"$html"
+          grep -q "vpn.html" <<<"$html"
+          grep -q "ai.html" <<<"$html"
+          grep -q "ghostos.html" <<<"$html"
