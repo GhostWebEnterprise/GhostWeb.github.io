@@ -18,7 +18,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="https://ghostwebenterprise.github.io"
+          base="https://ghostweb.bot.cd"
           routes=("/" "/signal.html" "/vpn.html" "/ai.html" "/ghostos.html")
           for route in "${routes[@]}"; do
             echo "Checking ${base}${route}"
@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="https://ghostwebenterprise.github.io"
+          base="https://ghostweb.bot.cd"
           curl --fail --silent --show-error --location "${base}/styles.css" >/dev/null
           curl --fail --silent --show-error --location "${base}/app.js" >/dev/null
           html="$(curl --fail --silent --show-error --location "${base}/")"
